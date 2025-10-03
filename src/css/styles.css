@@ -1,0 +1,10 @@
+@import "fonts.css";
+body {
+    font-family: "Rubik Doodle Shadow", system-ui;
+    background-color:brown;
+    color:white
+}
+
+img {
+    width: 50%;
+}
