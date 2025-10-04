@@ -15,7 +15,6 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.[contenthash].js',
         clean: true,
-        assetModuleFilename: 'images/[name].[contenthash][ext]'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -42,6 +41,9 @@ module.exports = {
                     },
 
                 },
+                generator: {
+                    filename: 'images/[name].[contenthash][ext]'  
+                },
                 use: [
                     {
                         loader: 'image-webpack-loader',
@@ -64,7 +66,10 @@ module.exports = {
             },
             {
                 test: /\.(ttf|woff|woff2|eot)$/,
-                type: 'asset/resource'
+                type: 'asset/resource',
+                generator: {
+                    filename: 'fonts/[name].[contenthash][ext]'
+                }
             }
         ],
     },
