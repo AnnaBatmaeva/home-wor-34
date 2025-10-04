@@ -1,4 +1,6 @@
-@import "fonts.css";
+
+@use "fonts" as *;
+
 body {
     font-family: "Rubik Doodle Shadow", system-ui;
     background-color:brown;

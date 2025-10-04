@@ -2,14 +2,16 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const ESlintPlugin = require("eslint-webpack-plugin")
 
 const { title } = require('process')
-const { Template } = require('webpack')
+const { Template } = require('webpack');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
     mode: 'production',
     entry: {
-        filename: path.resolve(__dirname, 'src/index.js')
+        filename: path.resolve(__dirname, 'src/index.ts')
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -24,13 +26,45 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'main.[contenthash].css'
         }
-        )
+        ),
+        new ESlintPlugin({
+            extensions: ['.ts', '.js', '.tsx', '.jsx'],
+            failOnError: false
+        }),
+        ...(process.env.ANALYZE ? [new BundleAnalyzerPlugin()] : [])
     ],
     module: {
         rules: [
             {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+                test: /\.(ts|tsx)$/, 
+                exclude: /node_modules/, 
+                use: {
+                    loader: 'babel-loader', 
+                    options: {
+                        presets: [
+                            '@babel/preset-env', 
+                            '@babel/preset-typescript' 
+                        ]
+                    }
+                }
+            },
+            {
+                test: /\.(js|jsx)$/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.(c|sa|sc)ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader'
+                ],
+
             },
             {
                 test: /\.(png|jpg|jpeg|svg|gif|webp)$/,
@@ -42,7 +76,7 @@ module.exports = {
 
                 },
                 generator: {
-                    filename: 'images/[name].[contenthash][ext]'  
+                    filename: 'images/[name].[contenthash][ext]'
                 },
                 use: [
                     {
@@ -80,4 +114,13 @@ module.exports = {
         ],
         minimize: true,
     },
+    devServer: {
+        static: {
+            directory: path.join(__dirname, './dist'),
+        },
+        hot: true,
+        open: true,
+        port: 9000,
+        liveReload: true,
+    }
 };
